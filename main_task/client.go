@@ -23,10 +23,14 @@ func main() {
 	passwordPtr := flag.String("Password", "", "Client password")
 	intervalMsPtr := flag.Int("IntervalMs", 500, "Interval in milliseconds")
 	bufferSizePtr := flag.Int("BufferSize", 10, "Buffer size")
-	stopAfterPtr := flag.Duration("StopAfter", 5*time.Second, "Duration to stop after (e.g., 10s)")
+	stopAfterPtr := flag.Duration("StopAfter", 5*time.Second, "Duration to stop after")
 
 	// Разбор флагов
 	flag.Parse()
+
+	fmt.Println("Interval in ms: ", int32(*intervalMsPtr))
+	fmt.Println("Buffer size: ", int32(*bufferSizePtr))
+	fmt.Println("Stream will stop after: ", stopAfterPtr.String())
 
 	// Установка соединения с сервером
 	conn, err := grpc.Dial(":8080", grpc.WithInsecure())
