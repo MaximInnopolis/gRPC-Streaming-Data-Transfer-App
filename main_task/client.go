@@ -50,7 +50,7 @@ func main() {
 	// Начало стрима с сервера
 	stream, err := c.StartStream(context.Background(), &protos.StartStreamMessage{IntervalMs: int32(*intervalMsPtr)})
 	if err != nil {
-		log.Print(err)
+		log.Fatalf(err.Error())
 	}
 
 	// Буфер для хранения данных
