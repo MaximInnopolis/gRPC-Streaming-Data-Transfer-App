@@ -71,7 +71,7 @@ func (s *Server) StopStream(ctx context.Context, req *protos.StopStreamMessage) 
 }
 
 func main() {
-	portPtr := flag.String("port", "8080", "Port to listen on")
+	portPtr := flag.String("Port", "8080", "Port to listen on")
 	serverHelpPtr := flag.Bool("help", false, "Show help message for the server")
 	flag.Parse()
 

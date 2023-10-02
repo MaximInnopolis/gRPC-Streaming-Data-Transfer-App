@@ -19,6 +19,19 @@ To start the server, run the following command:
 go run server.go
 ```
 
+### Server Flags
+You can customize the client behavior by using the following optional flags:
+
+1. -help: Prints all  flag information (e.g., -help)
+
+2. -Port: Specifies the Port to listen on (e.g., -Port "port)
+
+Example usage with custom flags:
+```bash
+go run client.go -Login "john_doe" -Password "secret" -IntervalMs 1000 -BufferSize 20 -StopAfter 10s
+```
+
+
 ### Client
 
 To start client , run the following command:
@@ -29,3 +42,23 @@ go run client.go -Login "user" -Password "pass"
 
 Note that the parameters **IntervalMs**, **BufferSize**, and **StopAfter**
 have initial values of 500, 10, and 5 seconds, respectively.
+
+### Client Flags
+You can customize the client behavior by using the following optional flags:
+
+1. -help: Prints all  flag information (e.g., -help)
+
+2. -Login: Specifies the client login. (e.g., -Login "user")
+
+3. -Password: Specifies the client password. (e.g., -Password "pass")
+
+4. -IntervalMs: Specifies the interval in milliseconds between received data points. (default: 500)
+
+5. -BufferSize: Specifies the maximum buffer size for received data points. (default: 10)
+
+6. -StopAfter: Specifies the duration after which the client will stop data reception. (default: 5 seconds)
+
+Example usage with custom flags:
+```bash
+go run client.go -Login "john_doe" -Password "secret" -IntervalMs 1000 -BufferSize 20 -StopAfter 10s
+```
