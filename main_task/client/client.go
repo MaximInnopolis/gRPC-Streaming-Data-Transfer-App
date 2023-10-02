@@ -78,9 +78,8 @@ func main() {
 		default:
 			num, err := stream.Recv()
 			if err != nil {
-				//Todo
 				log.Printf("Failed to receive data from stream: %v", err)
-				return
+				continue
 			}
 			buffer = append(buffer, num)
 
