@@ -24,7 +24,6 @@ const _ = grpc.SupportPackageIsVersion7
 type NumberStreamClient interface {
 	Connect(ctx context.Context, in *LoginMessage, opts ...grpc.CallOption) (*Empty, error)
 	StartStream(ctx context.Context, in *StartStreamMessage, opts ...grpc.CallOption) (NumberStream_StartStreamClient, error)
-	StopStream(ctx context.Context, in *StopStreamMessage, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type numberStreamClient struct {
@@ -76,22 +75,12 @@ func (x *numberStreamStartStreamClient) Recv() (*Number, error) {
 	return m, nil
 }
 
-func (c *numberStreamClient) StopStream(ctx context.Context, in *StopStreamMessage, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/protos.NumberStream/StopStream", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // NumberStreamServer is the server API for NumberStream service.
 // All implementations must embed UnimplementedNumberStreamServer
 // for forward compatibility
 type NumberStreamServer interface {
 	Connect(context.Context, *LoginMessage) (*Empty, error)
 	StartStream(*StartStreamMessage, NumberStream_StartStreamServer) error
-	StopStream(context.Context, *StopStreamMessage) (*Empty, error)
 	mustEmbedUnimplementedNumberStreamServer()
 }
 
@@ -104,9 +93,6 @@ func (UnimplementedNumberStreamServer) Connect(context.Context, *LoginMessage) (
 }
 func (UnimplementedNumberStreamServer) StartStream(*StartStreamMessage, NumberStream_StartStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method StartStream not implemented")
-}
-func (UnimplementedNumberStreamServer) StopStream(context.Context, *StopStreamMessage) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StopStream not implemented")
 }
 func (UnimplementedNumberStreamServer) mustEmbedUnimplementedNumberStreamServer() {}
 
@@ -160,24 +146,6 @@ func (x *numberStreamStartStreamServer) Send(m *Number) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _NumberStream_StopStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopStreamMessage)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NumberStreamServer).StopStream(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protos.NumberStream/StopStream",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NumberStreamServer).StopStream(ctx, req.(*StopStreamMessage))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // NumberStream_ServiceDesc is the grpc.ServiceDesc for NumberStream service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -188,10 +156,6 @@ var NumberStream_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Connect",
 			Handler:    _NumberStream_Connect_Handler,
-		},
-		{
-			MethodName: "StopStream",
-			Handler:    _NumberStream_StopStream_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

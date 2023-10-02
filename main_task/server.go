@@ -13,10 +13,6 @@ import (
 
 type Server struct {
 	protos.UnimplementedNumberStreamServer
-	clientConn    *grpc.ClientConn
-	clientStream  protos.NumberStream_StartStreamServer
-	stopSignal    chan struct{}
-	streamClients map[string]chan struct{}
 }
 
 func (s *Server) Connect(ctx context.Context, req *protos.LoginMessage) (*protos.Empty, error) {
@@ -25,9 +21,7 @@ func (s *Server) Connect(ctx context.Context, req *protos.LoginMessage) (*protos
 }
 
 func (s *Server) StartStream(req *protos.StartStreamMessage, stream protos.NumberStream_StartStreamServer) error {
-	s.clientStream = stream
 	interval := time.Millisecond * time.Duration(req.IntervalMs)
-	s.stopSignal = make(chan struct{})
 	ctx, cancel := context.WithCancel(stream.Context())
 
 	stopped := false
@@ -40,9 +34,11 @@ func (s *Server) StartStream(req *protos.StartStreamMessage, stream protos.Numbe
 		for {
 			select {
 			case <-ctx.Done(): // Завершаем горутину при закрытии контекста
+				//fmt.Printf("Closed\n")
 				return
 			default:
-				err := s.clientStream.Send(&protos.Number{Value: value, Timestamp: time.Now().Unix()})
+				//fmt.Printf("Sending %v\n", value)
+				err := stream.Send(&protos.Number{Value: value, Timestamp: time.Now().Unix()})
 				if err != nil {
 					stopped = true
 					return
@@ -57,17 +53,10 @@ func (s *Server) StartStream(req *protos.StartStreamMessage, stream protos.Numbe
 
 	if !stopped {
 		// Если горутина не была остановлена, закрыть поток
-		s.clientStream.Send(&protos.Number{})
+		stream.Send(&protos.Number{})
 	}
 
 	return nil
-}
-
-func (s *Server) StopStream(ctx context.Context, req *protos.StopStreamMessage) (*protos.Empty, error) {
-	if s.stopSignal != nil {
-		close(s.stopSignal)
-	}
-	return &protos.Empty{}, nil
 }
 
 func main() {

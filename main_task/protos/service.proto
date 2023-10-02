@@ -20,12 +20,7 @@ message Number {
 
 message Empty {}
 
-message StopStreamMessage{
-  string message = 1;
-}
-
 service NumberStream {
   rpc Connect(LoginMessage) returns (Empty);
   rpc StartStream(StartStreamMessage) returns (stream Number);
-  rpc StopStream(StopStreamMessage) returns (Empty);
 }

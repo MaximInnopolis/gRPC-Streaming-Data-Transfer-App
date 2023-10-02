@@ -18,12 +18,13 @@ func printBuffer(buffer []*protos.Number) {
 }
 
 func main() {
+
 	// Определение флагов для строк и чисел
 	loginPtr := flag.String("Login", "", "Client login")
 	passwordPtr := flag.String("Password", "", "Client password")
-	intervalMsPtr := flag.Int("IntervalMs", 500, "Interval in milliseconds")
+	intervalMsPtr := flag.Int("IntervalMs", 100, "Interval in milliseconds")
 	bufferSizePtr := flag.Int("BufferSize", 10, "Buffer size")
-	stopAfterPtr := flag.Duration("StopAfter", 5*time.Second, "Duration to stop after")
+	stopAfterPtr := flag.Duration("StopAfter", 5500*time.Millisecond, "Duration to stop after")
 
 	clientHelpPtr := flag.Bool("help", false, "Show help message for the client")
 
@@ -54,8 +55,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+
 	// Начало стрима с сервера
-	stream, err := c.StartStream(context.Background(), &protos.StartStreamMessage{IntervalMs: int32(*intervalMsPtr)})
+	stream, err := c.StartStream(ctx, &protos.StartStreamMessage{IntervalMs: int32(*intervalMsPtr)})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,10 +72,8 @@ func main() {
 	for {
 		select {
 		case <-stopTimer.C:
-			_, err := c.StopStream(context.Background(), &protos.StopStreamMessage{})
-			if err != nil {
-				log.Fatalf("Failed to stop stream: %v", err)
-			}
+			cancel()
+			printBuffer(buffer)
 			return
 		default:
 			num, err := stream.Recv()
