@@ -13,6 +13,12 @@ This is a console-based gRPC streaming data transfer application that includes b
 
 ### Server
 
+To build server:
+
+```bash
+go build server.go
+```
+
 To start the server, run the following command:
 
 ```bash
@@ -33,6 +39,12 @@ go run client.go -Login "john_doe" -Password "secret" -IntervalMs 1000 -BufferSi
 
 
 ### Client
+
+To build client:
+
+```bash
+go build client.go
+```
 
 To start client , run the following command:
 
