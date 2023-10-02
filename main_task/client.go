@@ -51,13 +51,13 @@ func main() {
 	// Установка соединения и отправка логин-информации
 	_, err = c.Connect(context.Background(), &protos.LoginMessage{Username: *loginPtr, Password: *passwordPtr})
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 	}
 
 	// Начало стрима с сервера
 	stream, err := c.StartStream(context.Background(), &protos.StartStreamMessage{IntervalMs: int32(*intervalMsPtr)})
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err)
 	}
 
 	// Буфер для хранения данных
