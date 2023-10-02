@@ -25,8 +25,15 @@ func main() {
 	bufferSizePtr := flag.Int("BufferSize", 10, "Buffer size")
 	stopAfterPtr := flag.Duration("StopAfter", 5*time.Second, "Duration to stop after")
 
+	clientHelpPtr := flag.Bool("help", false, "Show help message for the client")
+
 	// Разбор флагов
 	flag.Parse()
+
+	if *clientHelpPtr {
+		flag.Usage()
+		return
+	}
 
 	fmt.Println("Interval in ms: ", int32(*intervalMsPtr))
 	fmt.Println("Buffer size: ", int32(*bufferSizePtr))

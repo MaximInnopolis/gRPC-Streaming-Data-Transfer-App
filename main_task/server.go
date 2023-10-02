@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"gRPC-Streaming-Data-Transfer-App/main_task/protos"
 	"google.golang.org/grpc"
@@ -56,7 +57,7 @@ func (s *Server) StartStream(req *protos.StartStreamMessage, stream protos.Numbe
 
 	if !stopped {
 		// Если горутина не была остановлена, закрыть поток
-		s.clientStream.Send(&protos.Number{Value: -1}) // Отправляем специальное значение для индикации завершения потока
+		s.clientStream.Send(&protos.Number{})
 	}
 
 	return nil
@@ -70,11 +71,22 @@ func (s *Server) StopStream(ctx context.Context, req *protos.StopStreamMessage) 
 }
 
 func main() {
+	portPtr := flag.String("port", "8080", "Port to listen on")
+	serverHelpPtr := flag.Bool("help", false, "Show help message for the server")
+	flag.Parse()
+
+	if *serverHelpPtr {
+		flag.Usage()
+		return
+	}
+
+	listenAddr := ":" + *portPtr
+
 	s := grpc.NewServer()
 	srv := &Server{}
 	protos.RegisterNumberStreamServer(s, srv)
 
-	l, err := net.Listen("tcp", ":8080")
+	l, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
